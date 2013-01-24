@@ -1,1 +1,1 @@
-@java -jar authority.jar --baseFolder data
+@java -cp gitblit.jar com.gitblit.authority.Launcher --baseFolder data

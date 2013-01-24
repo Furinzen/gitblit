@@ -21,12 +21,18 @@ import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.SplashScreen;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import com.gitblit.Constants;
-import com.gitblit.Launcher;
 import com.gitblit.build.Build;
 import com.gitblit.build.Build.DownloadListener;
 import com.gitblit.client.Translation;
@@ -37,7 +43,15 @@ import com.gitblit.client.Translation;
  * @author James Moger
  * 
  */
-public class GitblitAuthorityLauncher {
+public class Launcher {
+
+	public static final boolean DEBUG = false;
+
+	/**
+	 * Parameters of the method to add an URL to the System classes.
+	 */
+	private static final Class<?>[] PARAMETERS = new Class[] { URL.class };
+
 
 	public static void main(String[] args) {
 		final SplashScreen splash = SplashScreen.getSplashScreen();
@@ -53,7 +67,7 @@ public class GitblitAuthorityLauncher {
 		Build.authority(downloadListener);
 
 		File libFolder = new File("ext");
-		List<File> jars = Launcher.findJars(libFolder.getAbsoluteFile());
+		List<File> jars = findJars(libFolder.getAbsoluteFile());
 		
 		// sort the jars by name and then reverse the order so the newer version
 		// of the library gets loaded in the event that this is an upgrade
@@ -62,7 +76,7 @@ public class GitblitAuthorityLauncher {
 		for (File jar : jars) {
 			try {
 				updateSplash(splash, Translation.get("gb.loading") + " " + jar.getName() + "...");
-				Launcher.addJarFile(jar);
+				addJarFile(jar);
 			} catch (IOException e) {
 
 			}
@@ -108,6 +122,56 @@ public class GitblitAuthorityLauncher {
 			});
 		} catch (Throwable t) {
 			t.printStackTrace();
+		}
+	}
+	
+	public static List<File> findJars(File folder) {
+		List<File> jars = new ArrayList<File>();
+		if (folder.exists()) {
+			File[] libs = folder.listFiles(new FileFilter() {
+				@Override
+				public boolean accept(File file) {
+					return !file.isDirectory() && file.getName().toLowerCase().endsWith(".jar");
+				}
+			});
+			if (libs != null && libs.length > 0) {
+				jars.addAll(Arrays.asList(libs));
+				if (DEBUG) {
+					for (File jar : jars) {
+						System.out.println("found " + jar);
+					}
+				}
+			}
+		}
+
+		return jars;
+	}
+
+	/**
+	 * Adds a file to the classpath
+	 * 
+	 * @param f
+	 *            the file to be added
+	 * @throws IOException
+	 */
+	public static void addJarFile(File f) throws IOException {
+		if (f.getName().indexOf("-sources") > -1 || f.getName().indexOf("-javadoc") > -1) {
+			// don't add source or javadoc jars to runtime classpath
+			return;
+		}
+		URL u = f.toURI().toURL();
+		if (DEBUG) {
+			System.out.println("load=" + u.toExternalForm());
+		}
+		URLClassLoader sysloader = (URLClassLoader) ClassLoader.getSystemClassLoader();
+		Class<?> sysclass = URLClassLoader.class;
+		try {
+			Method method = sysclass.getDeclaredMethod("addURL", PARAMETERS);
+			method.setAccessible(true);
+			method.invoke(sysloader, new Object[] { u });
+		} catch (Throwable t) {
+			throw new IOException(MessageFormat.format(
+					"Error, could not add {0} to system classloader", f.getPath()), t);
 		}
 	}
 }

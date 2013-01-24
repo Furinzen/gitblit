@@ -30,7 +30,7 @@ Open `data/gitblit.properties` in your favorite text editor and make sure to rev
     **https** is strongly recommended because passwords are insecurely transmitted form your browser/git client using Basic authentication!
     - *git.packedGitLimit* (set larger than the size of your largest repository)
     - *git.streamFileThreshold* (set larger than the size of your largest committed file)
-3. Execute `authority.cmd` or `java -jar authority.jar --baseFolder data` from a command-line
+3. Execute `authority.cmd` or `java -cp gitblit.jar com.gitblit.authority.Launcher --baseFolder data` from a command-line
     1. fill out the fields in the *new certificate defaults* dialog
 	2. enter the store password used in *server.storePassword* when prompted.  This generates an SSL certificate for **localhost**.
 	3. you may want to generate an SSL certificate for the hostname or ip address hostnames you are serving from<br/>**NOTE:** You can only have **one** SSL certificate specified for a port.
