@@ -15,17 +15,19 @@
 	<property name="project.resources.dir" value="${basedir}/resources" />	
 	<property name="project.distrib.dir" value="${basedir}/distrib" />
 	<property name="project.docs.dir" value="${basedir}/docs" />
+
 	
 	<!--
 		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-		Initialize Moxie
+		Initialize Moxie and setup build properties
 		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-->
 	<target name="buildinfo">
 	
-		<!-- Setup Ant build from build.moxie and resolve dependencies -->
+		<!-- Setup Ant build from build.moxie and resolve dependencies.
+		     if it exists, build.properties is automatically loaded -->
 		<mx:init verbose="no" />
-		
+				
 		<!-- Target folders -->
 		<property name="project.target.dir" value="${mxp.targetFolder}" />
 		<property name="project.site.dir" value="${project.target.dir}/site" />
@@ -54,15 +56,10 @@
 	
 	<!--
 		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-		Report the compile dependencies on the console
+		Cleanup all build artifacts and folders
 		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-->
-	<target name="report" depends="buildinfo">
-		<!-- Report compile dependencies to the console -->
-		<mx:report scope="compile" destfile="${project.target.dir}/dependencies.txt" />
-	</target>
-
-	<target name="cleanup" depends="buildinfo" description="Setup up project">
+	<target name="clean" depends="buildinfo" description="Cleanup all build artifacts and folders">
 		<!-- cleanup legacy build structure -->
 		<!-- this can be eliminated after 1.3.0 release -->
 		<delete>
@@ -84,13 +81,14 @@
 		<mx:clean />
 
 	</target>
+
 	
 	<!--
 		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		Setup
 		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-->
-	<target name="setup" depends="cleanup" description="Setup up project">
+	<target name="setup" depends="buildinfo" description="Setup up project">
 
 		<!-- copy distrib/data to project data folder -->
 		<mkdir dir="${basedir}/data" />
@@ -140,9 +138,20 @@
 			 	outputclass="com.gitblit.Keys"
 			 	outputfolder="${project.src.dir}" />
 
-		<!-- Compile project using build.moxie definitions -->
-		<mx:javac scope="compile" />
+		<!-- Compile project incrementally -->
+		<mx:javac scope="compile" clean="false" />
 		
+	</target>
+
+		
+	<!--
+		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		Report the compile dependencies on the console
+		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	-->
+	<target name="report" depends="buildinfo" description="generate dependency report">
+		<!-- Report compile dependencies to the console -->
+		<mx:report scope="compile" destfile="${project.target.dir}/dependencies.txt" />
 	</target>
 
 	
@@ -161,7 +170,20 @@
 		
 	</target>
 
+
+	<!--
+		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		Run Gitblit GO
+		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	-->
+	<target name="run" depends="compile" description="Run Gitblit GO">
+		
+		<!-- run the mainclass in a separate JVM -->
+		<mx:run fork="true" />
+		
+	</target>			
 			
+	
 	<!--
 		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		Build Gitblit GO
@@ -173,8 +195,6 @@
 
 		<local name="go.dir" />
 		<property name="go.dir" value="${project.build.dir}/go" />	
-
-		<!-- Delete the deploy folder -->
 		<delete dir="${go.dir}" />
 
 		<copyCommonFiles tofolder="${go.dir}"/>
@@ -225,7 +245,6 @@
 
 		<local name="war.dir" />
 		<property name="war.dir" value="${project.build.dir}/war" />
-
 		<delete dir="${war.dir}" />
 		
 		<local name="webinf" />
@@ -291,6 +310,8 @@
 	<target name="buildFederationClient" depends="compile" description="Builds the stand-alone Gitblit federation client">
 		<echo>Building Gitblit Federation Client ${project.version}</echo>
 	
+		<!-- generate jar by traversing the class hierarchy of the specified
+			 classes, exclude any classes in classpath jars -->
 		<mx:genjar dependencies="" excludeClasspathJars="true"
 			destfile="${project.target.dir}/fedclient.jar">
 			<mainclass name="com.gitblit.FederationClient" />
@@ -328,8 +349,7 @@
 		<echo>Building Gitblit Express for RedHat OpenShift ${project.version}</echo>
 		
 		<local name="express.dir" />
-		<property name="express.dir" value="${project.build.dir}/express" />
-		
+		<property name="express.dir" value="${project.build.dir}/express" />		
 		<delete dir="${express.dir}" />
 		
 		<!-- Create the OpenShift filesystem -->
@@ -398,6 +418,8 @@
 	<target name="buildManager" depends="compile" description="Builds the stand-alone Gitblit Manager">
 		<echo>Building Gitblit Manager ${project.version}</echo>
 
+		<!-- generate jar by traversing the class hierarchy of the specified
+			 classes, exclude any classes in classpath jars -->
 		<mx:genjar dependencies="" excludeClasspathJars="true"
 			destfile="${project.target.dir}/manager.jar">
 			<resource file="${project.src.dir}/com/gitblit/client/splash.png" />
@@ -463,6 +485,8 @@
 	<target name="buildAuthority" depends="compile" description="Builds the stand-alone Gitblit Authority">
 		<echo>Building Gitblit Authority ${project.version}</echo>
 
+		<!-- generate jar by traversing the class hierarchy of the specified
+			 classes, exclude any classes in "authority" classpath jars -->
 		<mx:genjar dependencies="authority" excludeClasspathJars="true" 
 			destfile="${project.target.dir}/authority.jar">
 			<resource file="${project.src.dir}/com/gitblit/client/splash.png" />
@@ -532,6 +556,10 @@
 	<target name="buildApiLibrary" depends="compile" description="Builds the Gitblit RPC client library">
 		<echo>Building Gitblit API Library ${project.version}</echo>
 	
+		<local name="javadoc.dir" />
+		<property name="javadoc.dir" value="${project.build.dir}/javadoc" />
+		<delete dir="${javadoc.dir}" />
+
 		<!-- Build API Library jar -->
 		<mx:genjar dependencies="" excludeClasspathJars="true"
 			destfile="${project.target.dir}/gbapi-${project.version}.jar">
@@ -555,7 +583,7 @@
 		</zip>
 		
 		<!-- Build API JavaDoc jar -->
-		<javadoc destdir="${project.target.dir}/javadoc" verbose="no" >
+		<mx:javadoc destdir="${javadoc.dir}">
 			<fileset dir="${project.src.dir}" defaultexcludes="yes">
 				<include name="com/gitblit/Constants.java"/>
 				<include name="com/gitblit/GitBlitException.java"/>
@@ -564,9 +592,11 @@
 		  		<include name="com/gitblit/models/**/*.java"/>
 		  		<include name="com/gitblit/utils/**/*.java"/>			  		
 			</fileset>
-		</javadoc>
+			<redirector output="${project.build.dir}/javadoc.log" append="false" />
+		</mx:javadoc>
+		  			
 		<zip destfile="${project.target.dir}/gbapi-${project.version}-javadoc.jar">
-			<fileset dir="${project.target.dir}/javadoc" />
+			<fileset dir="${javadoc.dir}" />
 		</zip>
 		
 		<!-- Build the API library zip file -->
@@ -740,7 +770,7 @@
 		Publish binaries to Google Code
 		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-->
-	<target name="publishBinaries" depends="buildGO,buildWAR,buildExpress,buildFederationClient,buildManager,buildApiLibrary" description="Publish the Gitblit binaries to Google Code">
+	<target name="publishBinaries" depends="clean,buildGO,buildWAR,buildExpress,buildFederationClient,buildManager,buildApiLibrary" description="Publish the Gitblit binaries to Google Code">
 
 		<echo>Uploading Gitblit ${project.version} binaries</echo>
 
@@ -789,7 +819,7 @@
 		You must add ext/commons-net-1.4.0.jar to your ANT classpath.
 		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-->
-	<target name="publishSite" depends="buildSite,updateGhPages" description="Publish the Gitblit site to a webserver (requires ext/commons-net-1.4.0.jar)" >
+	<target name="publishSite" depends="clean,buildSite,updateGhPages" description="Publish the Gitblit site to a webserver (requires ext/commons-net-1.4.0.jar)" >
 
 		<echo>Uploading Gitblit ${project.version} website</echo>
 
