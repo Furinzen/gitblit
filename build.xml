@@ -43,14 +43,11 @@
 		<!-- Set Ant project properties -->
 		<property name="distribution.zipfile" value="gitblit-${project.version}.zip" />
 		<property name="distribution.warfile" value="gitblit-${project.version}.war" />
-		<property name="distribution.jarfile" value="gitblit-${project.version}.jar" />
-		<property name="distribution.pomfile" value="${basedir}/pom.xml" />
 		<property name="fedclient.zipfile" value="fedclient-${project.version}.zip" />
 		<property name="manager.zipfile" value="manager-${project.version}.zip" />
 		<property name="authority.zipfile" value="authority-${project.version}.zip" />
 		<property name="gbapi.zipfile" value="gbapi-${project.version}.zip" />
 		<property name="express.zipfile" value="express-${project.version}.zip" />
-		<property name="distribution.pomfileTmplt" value="tmplt.pom.xml" />		
 	</target>
 
 	
@@ -150,8 +147,10 @@
 		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-->
 	<target name="report" depends="buildinfo" description="generate dependency report">
+		
 		<!-- Report compile dependencies to the console -->
 		<mx:report scope="compile" destfile="${project.target.dir}/dependencies.txt" />
+		
 	</target>
 
 	
@@ -197,29 +196,12 @@
 		<property name="go.dir" value="${project.build.dir}/go" />	
 		<delete dir="${go.dir}" />
 
-		<copyCommonFiles tofolder="${go.dir}"/>
-		
 		<prepareDataFolder tofolder="${go.dir}/data" />
 		
-		<!-- Create deployment folder structure -->
-		<mkdir dir="${go.dir}" />
-		<copy todir="${go.dir}">
-			<fileset dir="${project.distrib.dir}">
-				<include name="**/*" />
-				<exclude name="federation.properties" />
-				<exclude name="openshift.mkd" />
-				<exclude name="data/groovy/**" />
-			</fileset>
-		</copy>
-
 		<!-- Build jar -->
 		<mx:jar destfile="${go.dir}/gitblit.jar" includeresources="true">
 			<mainclass name="com.gitblit.GitblitServer" />
 			<launcher paths="ext" />
-			<fileset dir="${project.compile.dir}">
-				<include name="**/*" />
-				<exclude name="com/gitblit/client/**" />				
-			</fileset>
 		</mx:jar>
 
 		<!-- Generate the docs for the GO build -->
@@ -227,6 +209,18 @@
 		
 		<!-- Create GO Zip deployment -->
 		<mx:zip basedir="${go.dir}" destfile="${project.target.dir}/${distribution.zipfile}">
+			<!-- LICENSE and NOTICE -->
+			<fileset dir="${basedir}" >
+				<include name="LICENSE" />
+				<include name="NOTICE" />
+			</fileset>
+			<!-- Distrib files -->
+			<fileset dir="${project.distrib.dir}">
+				<include name="**/*" />
+				<exclude name="federation.properties" />
+				<exclude name="openshift.mkd" />
+				<exclude name="data/groovy/**" />
+			</fileset>
 			<!-- include all dependencies -->
 			<dependencies prefix="ext" />
 		</mx:zip>
@@ -250,19 +244,6 @@
 		<local name="webinf" />
 		<property name="webinf" value="${war.dir}/WEB-INF" />
 
-		<copyCommonFiles tofolder="${webinf}" />
-			
-		<!-- Copy web.xml and users.conf to WEB-INF -->
-		<copy todir="${webinf}">
-			<fileset dir="${project.src.dir}/WEB-INF">
-			 	<include name="web.xml" />
-			</fileset>
-		</copy>
-		
-		<!-- Copy gitblit.properties as reference.properties -->
-		<copy tofile="${webinf}/reference.properties" 
-			file="${project.distrib.dir}/data/gitblit.properties"/>
-		
 		<!-- Generate the docs for the WAR build -->
 		<generateDocs tofolder="${webinf}/docs" />
 
@@ -272,30 +253,27 @@
 		<!-- Build the WAR web.xml from the prototype web.xml -->
 		<mx:webxml sourcefile="${project.src.dir}/WEB-INF/web.xml" destfile="${webinf}/web.xml" />
 
-		<!-- Gitblit resources -->
-		<copy todir="${war.dir}">
-			<fileset dir="${project.resources.dir}">
-				<exclude name="thumbs.db" />
-			</fileset>
-		</copy>
-
-		<!-- Gitblit classes -->
-		<mkdir dir="${webinf}/classes"/>
-		<copy todir="${webinf}/classes">
-			<fileset dir="${project.compile.dir}">
-				<exclude name="WEB-INF/" />
-				<exclude name="com/gitblit/tests/" />
-				<exclude name="com/gitblit/build/**" />
-				<exclude name="com/gitblit/client/**" />
-				<exclude name="com/gitblit/AddIndexedBranch*.class" />
-				<exclude name="com/gitblit/GitBlitServer*.class" />
-				<exclude name="com/gitblit/Launcher*.class" />
-				<exclude name="com/gitblit/authority/**" />
-			</fileset>
-		</copy>
-
 		<!-- Build the WAR file -->
 		<mx:zip basedir="${war.dir}" destfile="${project.target.dir}/${distribution.warfile}" compress="true" >
+			<!-- Resources in root -->
+			<fileset dir="${project.resources.dir}">
+				<exclude name="thumbs.db" />
+				<exclude name="*.mkd" />
+			</fileset>
+			<!-- WEB-INF folder -->
+			<zipfileset fullpath="WEB-INF/reference.properties" 
+				file="${project.distrib.dir}/data/gitblit.properties" />
+			<zipfileset prefix="WEB-INF" dir="${basedir}" >
+				<include name="LICENSE" />
+				<include name="NOTICE" />
+			</zipfileset>
+			<!-- Classes and classpath resources -->
+			<zipfileset prefix="WEB-INF/classes" dir="${project.compile.dir}">
+				<include name="**/*.class" />
+				<include name="**/*.properties" />
+				<include name="**/*.mkd" />
+				<exclude name="WEB-INF" />
+			</zipfileset>
 			<!-- include "war" tagged dependencies -->
 			<dependencies prefix="WEB-INF/lib" tag="war" />
 		</mx:zip>
@@ -337,6 +315,7 @@
 		
 		<!-- Cleanup -->
 		<delete file="${project.target.dir}/fedclient.jar" />
+		
 	</target>
 
 
@@ -361,16 +340,6 @@
 		<local name="webinf" />
 		<property name="webinf" value="${deployments.root}/WEB-INF" />
 
-		<!-- Copy the Gitblit OpenShift readme file -->
-		<copy tofile="${express.dir}/README.gitblit" 
-			file="${project.distrib.dir}/openshift.mkd"/>
-
-		<copyCommonFiles tofolder="${express.dir}" />
-
-		<!-- Copy gitblit.properties as reference.properties -->
-		<copy tofile="${webinf}/reference.properties" 
-			file="${project.distrib.dir}/data/gitblit.properties"/>
-
 		<!-- Prepare the data folder -->
 		<prepareDataFolder toFolder="${webinf}/data" />
 					
@@ -380,16 +349,8 @@
 		propertiesFile="${project.distrib.dir}/data/gitblit.properties"
 		skip="server.*" />
 
-
-		<!-- Gitblit resources -->
-		<copy todir="${deployments.root}">
-			<fileset dir="${project.resources.dir}">
-				<exclude name="thumbs.db" />
-			</fileset>
-		</copy>
-
 		<!-- Gitblit classes -->
-		<jar destfile="${webinf}/lib/gitblit-${project.version}.jar">
+		<jar destfile="${webinf}/lib/gitblit.jar">
 			<fileset dir="${project.compile.dir}">
 				<exclude name="WEB-INF/" />
 				<exclude name="com/gitblit/tests/" />
@@ -403,6 +364,20 @@
 
 		<!-- Build Express Zip file -->
 		<mx:zip basedir="${express.dir}" destfile="${project.target.dir}/${express.zipfile}">
+			<fileset dir="${basedir}">
+				<include name="LICENSE" />
+				<include name="NOTICE" />
+			</fileset>
+			<!-- README -->
+			<zipfileset fullpath="README.gitblit" file="${project.distrib.dir}/openshift.mkd" />
+			<!-- resources -->
+			<zipfileset prefix="deployments/ROOT.war" dir="${project.resources.dir}">
+				<exclude name="thumbs.db" />
+				<exclude name="*.mkd" />
+			</zipfileset>
+			<!-- reference.properties -->
+			<zipfileset fullpath="deployments/ROOT.war/WEB-INF/reference.properties" 
+				file="${project.distrib.dir}/data/gitblit.properties" />
 			<!-- include "war" tagged dependencies -->
 			<dependencies prefix="deployments/ROOT.war/WEB-INF/lib" tag="war" />
 		</mx:zip>
@@ -952,24 +927,6 @@
 	
 	<!--
 		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
-		Macro to copy common files (LICENSE, NOTICE, etc) for the target build
-		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	-->
-	<macrodef name="copyCommonFiles">
-		<attribute name="toFolder"/>
-		<sequential>
-			<mkdir dir="@{toFolder}" />
-			<copy todir="@{toFolder}">
-				<fileset dir="${basedir}">
-					<include name="LICENSE" />
-					<include name="NOTICE" />
-				</fileset>			
-			</copy>			
-	     </sequential>
-	</macrodef>
-	
-	<!--
-		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
 		Macro to upload binaries to GoogleCode
 		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-->
@@ -991,73 +948,19 @@
 
 
 	<!--
-	
-	The following targets have been contributed for the Gerrit-Gitblit plugin
-	which is a separate project.
-	
-	-->
-	
-	<property name="project.maven.repo.url" value="enter here your Maven repo URL" />
-	<property name="project.maven.repo.id" value="gitblit.maven.repo" />
-					
-	<!--
-		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-		Build Gitblit JAR for usage in other projects plug-ins (i.e. Gerrit)
-		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	-->
-	<target name="buildJAR" depends="compile" description="Build Gitblit JAR">
-
-		<echo>Building Gitblit JAR ${project.version}</echo>
-
-		<local name="project.jar.dir" />
-		<property name="project.jar.dir" value="${project.build.dir}/jar" />
-
-		<delete dir="${project.jar.dir}" />
-
-		<!-- Gitblit classes -->
-		<mkdir dir="${project.jar.dir}"/>
-		<copy todir="${project.jar.dir}">
-			<fileset dir="${project.compile.dir}">
-				<exclude name="WEB-INF/" />
-				<exclude name="com/gitblit/tests/" />
-				<exclude name="com/gitblit/build/**" />
-				<exclude name="com/gitblit/client/**" />
-				<exclude name="com/gitblit/authority/**" />
-				<exclude name="com/gitblit/AddIndexedBranch*.class" />
-				<exclude name="com/gitblit/GitBlitServer*.class" />
-				<exclude name="com/gitblit/Launcher*.class" />
-			</fileset>
-		</copy>
-		<copy todir="${project.jar.dir}/static">
-			<fileset dir="${project.resources.dir}">
-				<exclude name="thumbs.db" />
-			</fileset>
-		</copy>
-
-		<!-- Build the JAR file -->
-		<jar basedir="${project.jar.dir}" destfile="${distribution.jarfile}" compress="true" />
-	</target>
-
-	<!--
-		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-		Build pom.xml for GitBlit JAR Maven module
-		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	-->
-	<target name="buildMaven" depends="buildJAR" description="Build pom.xml for Gitblit JAR Maven module">
-		<copy tofile="${distribution.pomfile}" file="${distribution.pomfileTmplt}"/>
-		<replace file="${distribution.pomfile}" token="@gb.version@" value="${project.version}" />
-	</target>
-
-	<!--
 		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		Install Gitblit JAR for usage as Maven module
 		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-->
-	<target name="installMaven" depends="buildMaven" description="Install Gitblit JAR as Maven module">
+	<target name="installMaven" depends="compile" description="Install Gitblit JAR as Maven module">
+		<local name="project.jar" />
+		<property name="project.jar" value="${project.build.dir}/gitblit.jar" />
+		<mx:jar destfile="${project.jar}" includeresources="true" />
+
 		<exec executable="mvn">
 			<arg value="install:install-file" />
-			<arg value="-Dfile=${distribution.jarfile}" />
-			<arg value="-DpomFile=${distribution.pomfile}" />
+			<arg value="-Dfile=${project.jar}" />
+			<arg value="-DpomFile=${basedir}/pom.xml" />
 			<arg value="-DcreateChecksum=true" />
 		</exec>
 	</target>
@@ -1065,13 +968,21 @@
 	<!--
     	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     	Upload Gitblit JAR to remote Maven repository
+    	
+    	build.properties:
+    	   project.maven.repo.url = http://whatever.com/maven2
+    	   project.maven.repo.id = whateverId
     	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     -->
-	<target name="uploadMaven" depends="buildJAR" description="Upload Gitblit JAR to remote Maven repository">
+	<target name="uploadMaven" depends="compile" description="Upload Gitblit JAR to remote Maven repository">
+		<local name="project.jar" />
+		<property name="project.jar" value="${project.build.dir}/gitblit.jar" />
+		<mx:jar destfile="${project.jar}" includeresources="true" />
+
 		<exec executable="mvn">
 			<arg value="deploy:deploy-file" />
-			<arg value="-Dfile=${distribution.jarfile}" />
-			<arg value="-DpomFile=${distribution.pomfile}" />
+			<arg value="-Dfile=${project.jar}" />
+			<arg value="-DpomFile=${basedir}/pom.xml" />
 			<arg value="-Durl=${project.maven.repo.url}" />
 			<arg value="-DrepositoryId=${project.maven.repo.id}" />
 			<arg value="-DcreateChecksum=true" />
