@@ -632,7 +632,10 @@
 					<divider />
 					<page name="settings" src="properties.mkd" />
 				</menu>
-				<page name="releases" src="releases.mkd" />
+				<menu name="changelog">
+					<page name="current release (${project.version})" src="currentrelease.mkd" />
+					<page name="older releases" src="history.mkd" />
+				</menu>
 				<page name="roadmap" src="roadmap.mkd" />					
 				<menu name="downloads">
 					<link name="Gitblit GO" src="http://code.google.com/p/gitblit/downloads/detail?name=${distribution.zipfile}" />
@@ -840,7 +843,10 @@
 						<divider />
 						<page name="settings" src="properties.mkd" />
 					</menu>
-					<page name="releases" src="releases.mkd" />
+					<menu name="changelog">
+						<page name="current release (${project.version})" src="currentrelease.mkd" />
+						<page name="older releases" src="history.mkd" />
+					</menu>
 					<menu name="links">
 						<link name="Demo" src="https://demo-gitblit.rhcloud.com" />
 						<divider />
