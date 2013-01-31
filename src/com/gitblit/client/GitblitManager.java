@@ -96,7 +96,7 @@ public class GitblitManager extends JFrame implements RegistrationsDialog.Regist
 	private void initialize() {
 		setContentPane(getCenterPanel());
 		setIconImage(new ImageIcon(getClass().getResource("/gitblt-favicon.png")).getImage());
-		setTitle("Gitblit Manager v" + Constants.VERSION + " (" + Constants.VERSION_DATE + ")");
+		setTitle("Gitblit Manager v" + Constants.getVersion() + " (" + Constants.getBuildDate() + ")");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		addWindowListener(new WindowAdapter() {
 			@Override

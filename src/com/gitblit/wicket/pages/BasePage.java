@@ -184,7 +184,7 @@ public abstract class BasePage extends WebPage {
 			add(new Label("userPanel", ""));
 		}
 
-		add(new Label("gbVersion", "v" + Constants.VERSION));
+		add(new Label("gbVersion", "v" + Constants.getVersion()));
 		if (GitBlit.getBoolean(Keys.web.aggressiveHeapManagement, false)) {
 			System.gc();
 		}

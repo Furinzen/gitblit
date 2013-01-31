@@ -18,7 +18,9 @@ package com.gitblit;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-
+import java.net.URL;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 
 /**
  * Constant values used by Gitblit.
@@ -31,18 +33,6 @@ public class Constants {
 	public static final String NAME = "Gitblit";
 
 	public static final String FULL_NAME = "Gitblit - a pure Java Git solution";
-
-	// The build script extracts this exact line so be careful editing it
-	// and only use A-Z a-z 0-9 .-_ in the string.
-	public static final String VERSION = "1.3.0-SNAPSHOT";
-
-	// The build script extracts this exact line so be careful editing it
-	// and only use A-Z a-z 0-9 .-_ in the string.
-	public static final String VERSION_DATE = "PENDING";
-
-	// The build script extracts this exact line so be careful editing it
-	// and only use A-Z a-z 0-9 .-_ in the string.
-	public static final String JGIT_VERSION = "JGit 2.2.0 (201212191850-r)";
 
 	public static final String ADMIN_ROLE = "#admin";
 	
@@ -95,9 +85,40 @@ public class Constants {
 	public static final String baseFolder$ = "${" + baseFolder + "}";
 	
 	public static final String contextFolder$ = "${contextFolder}";
-	
+
+	public static String getVersion() {
+		String v = Constants.class.getPackage().getImplementationVersion();
+		if (v == null) {
+			return "0.0.0-SNAPSHOT";
+		}
+		return v;
+	}
+
 	public static String getGitBlitVersion() {
-		return NAME + " v" + VERSION;
+		return NAME + " v" + getVersion();
+	}
+	
+	public static String getBuildDate() {
+		return getManifestValue("build-date", "PENDING");
+	}
+	
+	private static String getManifestValue(String attrib, String defaultValue) {
+		Class<?> clazz = Constants.class;
+		String className = clazz.getSimpleName() + ".class";
+		String classPath = clazz.getResource(className).toString();
+		if (!classPath.startsWith("jar")) {
+			// Class not from JAR
+			return defaultValue;
+		}
+		try {
+			String manifestPath = classPath.substring(0, classPath.lastIndexOf("!") + 1) + "/META-INF/MANIFEST.MF";
+			Manifest manifest = new Manifest(new URL(manifestPath).openStream());
+			Attributes attr = manifest.getMainAttributes();
+			String value = attr.getValue(attrib);
+			return value;
+		} catch (Exception e) {
+		}
+		return defaultValue;
 	}
 	
 	/**

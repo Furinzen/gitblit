@@ -67,7 +67,7 @@ public class FederationClient {
 			System.exit(0);
 		}
 		
-		System.out.println("Gitblit Federation Client v" + Constants.VERSION + " (" + Constants.VERSION_DATE + ")");
+		System.out.println("Gitblit Federation Client v" + Constants.getVersion() + " (" + Constants.getBuildDate() + ")");
 
 		// command-line specified repositories folder
 		if (!StringUtils.isEmpty(params.repositoriesFolder)) {

@@ -53,8 +53,8 @@ public class ServerStatus implements Serializable {
 
 	public ServerStatus(boolean isGO) {
 		this.bootDate = new Date();
-		this.version = Constants.VERSION;
-		this.releaseDate = Constants.VERSION_DATE;
+		this.version = Constants.getVersion();
+		this.releaseDate = Constants.getBuildDate();
 		this.isGO = isGO;
 
 		this.heapMaximum = Runtime.getRuntime().maxMemory();

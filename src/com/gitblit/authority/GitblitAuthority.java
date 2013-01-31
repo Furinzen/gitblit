@@ -175,7 +175,7 @@ public class GitblitAuthority extends JFrame implements X509Log {
 	
 	public void initialize(String baseFolder) {
 		setIconImage(new ImageIcon(getClass().getResource("/gitblt-favicon.png")).getImage());
-		setTitle("Gitblit Certificate Authority v" + Constants.VERSION + " (" + Constants.VERSION_DATE + ")");
+		setTitle("Gitblit Certificate Authority v" + Constants.getVersion() + " (" + Constants.getBuildDate() + ")");
 		setContentPane(getUI());
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		addWindowListener(new WindowAdapter() {

@@ -85,7 +85,7 @@ public class GitblitManagerLauncher {
 						g.drawString(string, x + ((w - xw) / 2), y - 5);
 						
 						// paint version
-						String ver = "v" + Constants.VERSION;
+						String ver = "v" + Constants.getVersion();
 						int vw = g.getFontMetrics().stringWidth(ver);
 						g.drawString(ver, 320 - vw - 5, 34);
 						g.dispose();
