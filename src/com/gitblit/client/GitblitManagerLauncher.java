@@ -27,8 +27,6 @@ import java.util.List;
 
 import com.gitblit.Constants;
 import com.gitblit.Launcher;
-import com.gitblit.build.Build;
-import com.gitblit.build.Build.DownloadListener;
 
 /**
  * Downloads dependencies and launches Gitblit Manager.
@@ -41,16 +39,6 @@ public class GitblitManagerLauncher {
 	public static void main(String[] args) {
 		final SplashScreen splash = SplashScreen.getSplashScreen();
 		
-		DownloadListener downloadListener = new DownloadListener() {
-			@Override
-			public void downloading(String name) {
-				updateSplash(splash, Translation.get("gb.downloading") + " " + name);				
-			}
-		};
-		
-		// download rpc client runtime dependencies
-		Build.manager(downloadListener);
-
 		File libFolder = new File("ext");
 		List<File> jars = Launcher.findJars(libFolder.getAbsoluteFile());
 		

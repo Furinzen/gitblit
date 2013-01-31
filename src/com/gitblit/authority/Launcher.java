@@ -33,8 +33,6 @@ import java.util.Collections;
 import java.util.List;
 
 import com.gitblit.Constants;
-import com.gitblit.build.Build;
-import com.gitblit.build.Build.DownloadListener;
 import com.gitblit.client.Translation;
 
 /**
@@ -56,16 +54,6 @@ public class Launcher {
 	public static void main(String[] args) {
 		final SplashScreen splash = SplashScreen.getSplashScreen();
 		
-		DownloadListener downloadListener = new DownloadListener() {
-			@Override
-			public void downloading(String name) {
-				updateSplash(splash, Translation.get("gb.downloading") + " " + name);				
-			}
-		};
-		
-		// download authority runtime dependencies
-		Build.authority(downloadListener);
-
 		File libFolder = new File("ext");
 		List<File> jars = findJars(libFolder.getAbsoluteFile());
 		
