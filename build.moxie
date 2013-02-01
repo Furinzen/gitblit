@@ -4,11 +4,9 @@
 
 # Proxies
 #
-# Moxie automatically uses all proxy definitions from your local
-# Maven settings (~/.m2/settings.xml).
-#
-# Moxie automatically uses all proxy definitions from your local
-# Moxie settings (~/.moxie/settings.moxie).
+# Moxie automatically uses all proxy definitions from your local Maven settings
+# (~/.m2/settings.xml) and also from your local Moxie settings
+# (~/.moxie/settings.moxie).
 #
 # Unlike Maven, which assumes you will proxy everything and requires
 # you to manually exclude hostnames (i.e. opt-out), Moxie allows you
@@ -69,6 +67,18 @@ sourceFolders:
 - compile 'src'
 - compile 'resources'
 - test 'tests'
+
+# compile for Java 6 class format
+tasks: {
+	"mx:javac" : {
+        source: 1.6
+        target: 1.6
+        compiler: javac1.6
+        encoding: UTF-8
+        # stop complaints about bootstrap classpath when compiling with Java 7
+        compilerArgs: '-Xlint:-options'
+    }
+}
 
 # Generate Eclipse project files.
 # Generate IntelliJ IDEA module files.
