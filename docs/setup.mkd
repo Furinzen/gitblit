@@ -1,6 +1,6 @@
 ## Gitblit WAR Installation & Setup
 
-1. Download [Gitblit WAR %VERSION%](http://code.google.com/p/gitblit/downloads/detail?name=%WAR%) to the webapps folder of your servlet container.  
+1. Download [Gitblit WAR %RELEASEVERSION%](%GCURL%gitblit-%RELEASEVERSION%.war) to the webapps folder of your servlet container.  
 2. You may have to manually extract the WAR (zip file) to a folder within your webapps folder.
 3. By default, the Gitblit webapp is configured through `WEB-INF/data/gitblit.properties`.<br/>
 Open `WEB-INF/data/gitblit.properties` in your favorite text editor and make sure to review and set:
@@ -20,7 +20,7 @@ Specifying an alternate *baseFolder* also allows for simpler upgrades in the fut
 
 ## Gitblit GO Installation & Setup
 
-1. Download and unzip [Gitblit GO %VERSION%](http://code.google.com/p/gitblit/downloads/detail?name=%GO%).  
+1. Download and unzip [Gitblit GO %RELEASEVERSION%](%GCURL%gitblit-%RELEASEVERSION%.zip).  
 *Its best to eliminate spaces in the path name.* 
 2. The server itself is configured through a simple text file.<br/>
 Open `data/gitblit.properties` in your favorite text editor and make sure to review and set:

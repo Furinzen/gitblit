@@ -1,13 +1,11 @@
 ## What is Gitblit?
 <div class="well" style="margin-left:5px;float:right;width:275px;padding: 10px 10px;">
-<b>Current Release %VERSION% (%BUILDDATE%)</b> <a href="releases.html">changelog</a>
-<div style="padding:5px;"><a style="width:175px;text-decoration:none;" class="btn btn-success" href="http://code.google.com/p/gitblit/downloads/detail?name=%GO%">Download Gitblit GO</a></div>
-<div style="padding:5px;"><a style="width:175px;text-decoration:none;" class="btn btn-danger" href="http://code.google.com/p/gitblit/downloads/detail?name=%WAR%">Download Gitblit WAR</a></div>
-<div style="padding:5px;"><a style="width:175px;text-decoration:none;" class="btn btn-info" href="http://code.google.com/p/gitblit/downloads/detail?name=%EXPRESS%">Download Gitblit Express</a></div>
-<div style="padding:5px;"><a style="width:175px;text-decoration:none;" class="btn btn-primary" href="http://code.google.com/p/gitblit/downloads/detail?name=%MANAGER%">Download Gitblit Manager</a></div>
+<b>Current Release %RELEASEVERSION% (%RELEASEDATE%)</b> <a href="releasecurrent.html">changelog</a>
 	<div style="text-align:center">
-		<a href="http://code.google.com/p/gitblit/downloads/detail?name=%API%">Gitblit API</a> | <a href="http://code.google.com/p/gitblit/downloads/detail?name=%FEDCLIENT%">Gitblit Federation Client</a>
-		<br/>
+<div style="padding:5px;"><a style="width:175px;text-decoration:none;" class="btn btn-success" href="%GCURL%gitblit-%RELEASEVERSION%.zip">Download Gitblit GO</a></div>
+<div style="padding:5px;"><a style="width:175px;text-decoration:none;" class="btn btn-danger" href="%GCURL%gitblit-%RELEASEVERSION%.war">Download Gitblit WAR</a></div>
+<div style="padding:5px;"><a style="width:175px;text-decoration:none;" class="btn btn-info" href="%GCURL%express-%RELEASEVERSION%.zip">Download Gitblit Express</a></div>
+<div style="padding:5px;"><a style="width:175px;text-decoration:none;" class="btn btn-primary" href="%GCURL%manager-%RELEASEVERSION%.zip">Download Gitblit Manager</a></div>
 		<a href="screenshots.html" title="Screenshots"><img style="margin-top:5px;border:1px solid #ccc;" src="thumbs/00.png" alt="Screenshots" /></a>
 	</div>
 
