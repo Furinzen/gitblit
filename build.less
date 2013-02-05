@@ -10,7 +10,8 @@
 // GLOBAL VALUES
 // --------------------------------------------------
 @blueDark:					#000060;
-@blueDarker:				#000040;
+@blueDarker:				#000050;
+@blueDarkest:				#000040;
 @standardGray:				#ccc;
 @cornflower:				#abd4ff;
 @white:						#fff;
@@ -23,7 +24,7 @@
 // Navbar
 // -------------------------
 @navbarHeight:                    45px;
-@navbarBackground:                @blueDarker;
+@navbarBackground:                @blueDarkest;
 @navbarBackgroundHighlight:       @blueDark;
 @navbarText:                      @white;
 @navbarLinkColor:                 @white;
@@ -59,14 +60,13 @@
 }
 
 .navbar-inner {
-	background-color:#000050;
+	background-color: @blueDarker;
 	border-bottom: 2px solid #ff9900;
 }
 
 body { padding-top: @navbarHeight + 15 } /* 60px to make the container go all the way to the bottom of the topbar */
 footer { margin-top: 25px; padding: 15px 0 16px; border-top: 1px solid #E5E5E5; }
-pre.prettyprint { overflow: hidden; }
-a:focus { outline: none; }
+
 a:hover { text-decoration: underline !important; }
 em { color: #b05000; }
 code {
@@ -76,9 +76,4 @@ code {
     border-radius: 3px;
     padding: 0 0.2em;
     font-family: monospace;
-}
-table {	font-size: inherit; }
-.sectionlink { 
-	font-size: 10pt;
-	vertical-align: top;
 }

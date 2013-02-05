@@ -629,7 +629,7 @@
 					<page name="rpc" src="rpc.mkd" />
 					<page name="design" src="design.mkd" />
 				</menu>
-				<menu name="setup">
+				<menu name="documentation">
 					<page name="setup" src="setup.mkd" sectionLinks="true" />
 					<page name="federation" src="federation.mkd" />
 					<divider />
@@ -833,14 +833,14 @@
 						<page name="overview" src="siteindex.mkd" out="index.html" />
 						<page name="features" src="features.mkd" />
 						<divider />
-						<page name="faq" src="faq.mkd" sectionLinks="true" />
-						<page name="rpc" src="rpc.mkd" />
 						<page name="design" src="design.mkd" />
+						<page name="rpc" src="rpc.mkd" />
 					</menu>
-					<menu name="setup">
+					<menu name="documentation">
 						<page name="setup" src="setup.mkd" sectionLinks="true" />
 						<page name="federation" src="federation.mkd" />
 						<divider />
+						<page name="faq" src="faq.mkd" sectionLinks="true" />
 						<page name="settings" src="properties.mkd" />
 					</menu>
 					<menu name="changelog">
