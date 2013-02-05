@@ -626,12 +626,12 @@
 					<page name="screenshots" src="screenshots.mkd" />
 					<divider />
 					<page name="faq" src="faq.mkd" sectionLinks="true" />
-					<page name="rpc" src="rpc.mkd" />
-					<page name="design" src="design.mkd" />
+					<page name="rpc" src="rpc.mkd" sectionLinks="true" />
+					<page name="design" src="design.mkd" sectionLinks="true" />
 				</menu>
 				<menu name="documentation">
 					<page name="setup" src="setup.mkd" sectionLinks="true" />
-					<page name="federation" src="federation.mkd" />
+					<page name="federation" src="federation.mkd" sectionLinks="true" />
 					<divider />
 					<page name="settings" src="properties.mkd" />
 				</menu>
