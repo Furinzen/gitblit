@@ -8,7 +8,7 @@ Because there are now several types of files and folders that must be considered
 <b>Express Users</b> make sure to update your web.xml file with the ${baseFolder} values!
 </div>
 
-**downloads** ([go](%GCURL%gitblit-%RELEASEVERSION%.zip) | [war](%GCURL%gitblit-%RELEASEVERSION%.war) | [express](%GCURL%express-%RELEASEVERSION%.zip) | [fedclient](%GCURL%fedclient-%RELEASEVERSION%.zip) | [manager](%GCURL%manager-%RELEASEVERSION%.zip) | [api](%GCURL%gbapi-%RELEASEVERSION%.zip)) &nbsp; *released %RELEASEDATE%*
+**downloads:** [GO Windows](%GCURL%gitblit-%RELEASEVERSION%.zip) | [GO Linux/OSX](%GCURL%gitblit-%RELEASEVERSION%.tar.gz) | [WAR](%GCURL%gitblit-%RELEASEVERSION%.war) | [Express](%GCURL%express-%RELEASEVERSION%.zip) | [fedclient](%GCURL%fedclient-%RELEASEVERSION%.zip) | [manager](%GCURL%manager-%RELEASEVERSION%.zip) | [api](%GCURL%gbapi-%RELEASEVERSION%.zip) &nbsp; *released %RELEASEDATE%*
 
 #### fixes
 

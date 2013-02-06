@@ -1,8 +1,9 @@
 ## What is Gitblit?
 <div class="well" style="margin-left:5px;float:right;width:275px;padding: 10px 10px;">
-<b>Current Release %RELEASEVERSION% (%RELEASEDATE%)</b> <a href="releasecurrent.html">changelog</a>
-	<div style="text-align:center">
-<div style="padding:5px;"><a style="width:175px;text-decoration:none;" class="btn btn-success" href="%GCURL%gitblit-%RELEASEVERSION%.zip">Download Gitblit GO</a></div>
+<div style="text-align:center">
+<b>Current Release %RELEASEVERSION% (%RELEASEDATE%)</b><br/><a href="releasecurrent.html">changelog</a>
+<div style="padding:5px;"><a style="width:175px;text-decoration:none;" class="btn btn-success" href="%GCURL%gitblit-%RELEASEVERSION%.zip">Download Gitblit GO (Windows)</a></div>
+<div style="padding:5px;"><a style="width:175px;text-decoration:none;" class="btn btn-success" href="%GCURL%gitblit-%RELEASEVERSION%.tar.gz">Download Gitblit GO (Linux/OSX)</a></div>
 <div style="padding:5px;"><a style="width:175px;text-decoration:none;" class="btn btn-danger" href="%GCURL%gitblit-%RELEASEVERSION%.war">Download Gitblit WAR</a></div>
 <div style="padding:5px;"><a style="width:175px;text-decoration:none;" class="btn btn-info" href="%GCURL%express-%RELEASEVERSION%.zip">Download Gitblit Express</a></div>
 <div style="padding:5px;"><a style="width:175px;text-decoration:none;" class="btn btn-primary" href="%GCURL%manager-%RELEASEVERSION%.zip">Download Gitblit Manager</a></div>

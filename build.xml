@@ -42,6 +42,7 @@
 			
 		<!-- Set Ant project properties -->
 		<property name="distribution.zipfile" value="gitblit-${project.version}.zip" />
+		<property name="distribution.tgzfile" value="gitblit-${project.version}.tar.gz" />
 		<property name="distribution.warfile" value="gitblit-${project.version}.war" />
 		<property name="fedclient.zipfile" value="fedclient-${project.version}.zip" />
 		<property name="manager.zipfile" value="manager-${project.version}.zip" />
@@ -203,30 +204,38 @@
 		
 		<!-- Build jar -->
 		<mx:jar destfile="${go.dir}/gitblit.jar" includeresources="true">
-			<mainclass name="com.gitblit.GitblitServer" />
+			<mainclass name="com.gitblit.GitBlitServer" />
 			<launcher paths="ext" />
 		</mx:jar>
 
 		<!-- Generate the docs for the GO build -->
 		<generateDocs tofolder="${go.dir}/docs" />
 		
-		<!-- Create GO Zip deployment -->
-		<mx:zip basedir="${go.dir}" destfile="${project.target.dir}/${distribution.zipfile}">
+		<!-- Create GO Windows Zip deployment -->
+		<mx:zip basedir="${go.dir}">
 			<!-- LICENSE and NOTICE -->
 			<fileset dir="${basedir}" >
 				<include name="LICENSE" />
 				<include name="NOTICE" />
 			</fileset>
 			<!-- Distrib files -->
-			<fileset dir="${project.distrib.dir}">
-				<include name="**/*" />
-				<exclude name="federation.properties" />
-				<exclude name="openshift.mkd" />
-				<exclude name="data/groovy/**" />
-			</fileset>
+			<zipfileset dir="${project.distrib.dir}/win" />
 			<!-- include all dependencies -->
 			<dependencies prefix="ext" />
 		</mx:zip>
+
+		<!-- Create GO Linux/OSX tar.gz deployment -->
+		<mx:tar basedir="${go.dir}" longfile="gnu" compression="gzip">
+			<!-- LICENSE and NOTICE -->
+			<fileset dir="${basedir}" >
+				<include name="LICENSE" />
+				<include name="NOTICE" />
+			</fileset>
+			<!-- Distrib files -->
+			<tarfileset dir="${project.distrib.dir}/linux" filemode="755" />
+			<!-- include all dependencies -->
+			<dependencies prefix="ext" />
+		</mx:tar>		
 
 	</target>
 	
@@ -624,16 +633,16 @@
 					<page name="overview" src="siteindex.mkd" out="index.html" />
 					<page name="features" src="features.mkd" />
 					<page name="screenshots" src="screenshots.mkd" />
-					<divider />
-					<page name="faq" src="faq.mkd" sectionLinks="true" />
-					<page name="rpc" src="rpc.mkd" sectionLinks="true" />
-					<page name="design" src="design.mkd" sectionLinks="true" />
 				</menu>
 				<menu name="documentation">
 					<page name="setup" src="setup.mkd" sectionLinks="true" />
 					<page name="federation" src="federation.mkd" sectionLinks="true" />
 					<divider />
 					<page name="settings" src="properties.mkd" />
+					<page name="faq" src="faq.mkd" sectionLinks="true" />
+					<divider />
+					<page name="design" src="design.mkd" sectionLinks="true" />
+					<page name="rpc" src="rpc.mkd" sectionLinks="true" />
 				</menu>
 				<menu name="changelog">
 					<page name="current release" src="releasecurrent.mkd" />
@@ -642,7 +651,8 @@
 					<page name="roadmap" src="roadmap.mkd" />					
 				</menu>
 				<menu name="downloads">
-					<link name="Gitblit GO" src="${gc.url}gitblit-${project.releaseVersion}.zip" />
+					<link name="Gitblit GO (Windows)" src="${gc.url}gitblit-${project.releaseVersion}.zip" />
+					<link name="Gitblit GO (Linux/OSX)" src="${gc.url}gitblit-${project.releaseVersion}.tar.gz" />
 					<link name="Gitblit WAR" src="${gc.url}gitblit-${project.releaseVersion}.war" />
 					<link name="Gitblit Express" src="${gc.url}express-${project.releaseVersion}.zip" />
 					<divider />
@@ -752,11 +762,17 @@
 
 		<echo>Uploading Gitblit ${project.version} binaries</echo>
 
-		<!-- Upload Gitblit GO ZIP file -->
+		<!-- Upload Gitblit GO Windows ZIP file -->
 		<googleUpload 
 			 sourceFile="${distribution.zipfile}" 
 			 targetFile="gitblit-${project.version}.zip"
-			 description="Gitblit GO v${project.version} (standalone, integrated Gitblit server)" />
+			 description="Gitblit GO v${project.version} (standalone, integrated Gitblit server for Windows)" />
+
+		<!-- Upload Gitblit GO Linux/Unix tar.gz file -->
+		<googleUpload 
+			 sourceFile="${distribution.tgzfile}" 
+			 targetFile="gitblit-${project.version}.tar.gz"
+			 description="Gitblit GO v${project.version} (standalone, integrated Gitblit server for Linux/Unix)" />
 
 		<!-- Upload Gitblit WAR file -->
 		<googleUpload 
@@ -832,9 +848,6 @@
 					<menu name="about">
 						<page name="overview" src="siteindex.mkd" out="index.html" />
 						<page name="features" src="features.mkd" />
-						<divider />
-						<page name="design" src="design.mkd" />
-						<page name="rpc" src="rpc.mkd" />
 					</menu>
 					<menu name="documentation">
 						<page name="setup" src="setup.mkd" sectionLinks="true" />
@@ -842,6 +855,9 @@
 						<divider />
 						<page name="faq" src="faq.mkd" sectionLinks="true" />
 						<page name="settings" src="properties.mkd" />
+						<divider />
+						<page name="design" src="design.mkd" />
+						<page name="rpc" src="rpc.mkd" />
 					</menu>
 					<menu name="changelog">
 						<page name="current release" src="releasecurrent.mkd" />

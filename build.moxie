@@ -63,7 +63,7 @@ scm: {
   }
 
 # Mainclass is used for setting jar manifests and using the mx:run target
-mainclass: com.gitblit.Launcher
+mainclass: com.gitblit.GitBlitServer
 
 # Moxie supports multiple source folders and allows you to assign
 # a scope to each folder.
