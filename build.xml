@@ -381,7 +381,7 @@
 				<include name="NOTICE" />
 			</fileset>
 			<!-- README -->
-			<zipfileset fullpath="README.gitblit" file="${project.distrib.dir}/openshift.mkd" />
+			<zipfileset fullpath="README.gitblit" file="${project.docs.dir}/openshift.mkd" />
 			<!-- resources -->
 			<zipfileset prefix="deployments/ROOT.war" dir="${project.resources.dir}">
 				<exclude name="thumbs.db" />
