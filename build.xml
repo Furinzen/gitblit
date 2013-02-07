@@ -14,8 +14,6 @@
 	<property name="project.src.dir" value="${basedir}/src" />	
 	<property name="project.resources.dir" value="${basedir}/resources" />	
 	<property name="project.distrib.dir" value="${basedir}/distrib" />
-	<property name="project.docs.dir" value="${basedir}/docs" />
-
 	
 	<!--
 		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -28,18 +26,6 @@
 		     if it exists, build.properties is automatically loaded -->
 		<mx:init verbose="no" />
 				
-		<!-- Target folders -->
-		<property name="project.target.dir" value="${mxp.targetFolder}" />
-		<property name="project.site.dir" value="${project.target.dir}/site" />
-
-		<!-- Temporary working folders -->
-		<property name="project.build.dir" value="${mxp.outputFolder}" />
-		<property name="project.compile.dir" value="${mxp.compile.outputFolder}" />	
-				
-		<tstamp>
-			 <format property="project.buildDate" pattern="yyyy-MM-dd" />
-		</tstamp>
-			
 		<!-- Set Ant project properties -->
 		<property name="distribution.zipfile" value="gitblit-${project.version}.zip" />
 		<property name="distribution.tgzfile" value="gitblit-${project.version}.tar.gz" />
@@ -153,7 +139,7 @@
 	<target name="report" depends="buildinfo" description="generate dependency report">
 		
 		<!-- Report compile dependencies to the console -->
-		<mx:report scope="compile" destfile="${project.target.dir}/dependencies.txt" />
+		<mx:report scope="compile" destfile="${project.targetDirectory}/dependencies.txt" />
 		
 	</target>
 
@@ -197,7 +183,7 @@
 		<echo>Building Gitblit GO ${project.version}</echo>
 
 		<local name="go.dir" />
-		<property name="go.dir" value="${project.build.dir}/go" />	
+		<property name="go.dir" value="${project.outputDirectory}/go" />	
 		<delete dir="${go.dir}" />
 
 		<prepareDataFolder tofolder="${go.dir}/data" />
@@ -250,7 +236,7 @@
 		<echo>Building Gitblit WAR ${project.version}</echo>
 
 		<local name="war.dir" />
-		<property name="war.dir" value="${project.build.dir}/war" />
+		<property name="war.dir" value="${project.outputDirectory}/war" />
 		<delete dir="${war.dir}" />
 		
 		<local name="webinf" />
@@ -266,7 +252,7 @@
 		<mx:webxml sourcefile="${project.src.dir}/WEB-INF/web.xml" destfile="${webinf}/web.xml" />
 
 		<!-- Build the WAR file -->
-		<mx:zip basedir="${war.dir}" destfile="${project.target.dir}/${distribution.warfile}" compress="true" >
+		<mx:zip basedir="${war.dir}" destfile="${project.targetDirectory}/${distribution.warfile}" compress="true" >
 			<!-- Resources in root -->
 			<fileset dir="${project.resources.dir}">
 				<exclude name="thumbs.db" />
@@ -280,7 +266,7 @@
 				<include name="NOTICE" />
 			</zipfileset>
 			<!-- Classes and classpath resources -->
-			<zipfileset prefix="WEB-INF/classes" dir="${project.compile.dir}">
+			<zipfileset prefix="WEB-INF/classes" dir="${project.compileOutputDirectory}">
 				<include name="**/*.class" />
 				<include name="**/*.properties" />
 				<include name="**/*.mkd" />
@@ -303,19 +289,19 @@
 		<!-- generate jar by traversing the class hierarchy of the specified
 			 classes, exclude any classes in classpath jars -->
 		<mx:genjar dependencies="" excludeClasspathJars="true"
-			destfile="${project.target.dir}/fedclient.jar">
+			destfile="${project.targetDirectory}/fedclient.jar">
 			<mainclass name="com.gitblit.FederationClient" />
 			<launcher paths="ext" />
-			<resource file="${project.compile.dir}/log4j.properties" />
+			<resource file="${project.compileOutputDirectory}/log4j.properties" />
 		</mx:genjar>
 		
 		<!-- Build the federation client zip file -->
-		<mx:zip destfile="${project.target.dir}/${fedclient.zipfile}">
+		<mx:zip destfile="${project.targetDirectory}/${fedclient.zipfile}">
 			<fileset dir="${basedir}">
 				<include name="LICENSE" />
 				<include name="NOTICE" />
 			</fileset>
-			<fileset dir="${project.target.dir}">
+			<fileset dir="${project.targetDirectory}">
 				<include name="fedclient.jar" />
 			</fileset>
 			<fileset dir="${project.distrib.dir}">
@@ -326,7 +312,7 @@
 		</mx:zip>
 		
 		<!-- Cleanup -->
-		<delete file="${project.target.dir}/fedclient.jar" />
+		<delete file="${project.targetDirectory}/fedclient.jar" />
 		
 	</target>
 
@@ -340,7 +326,7 @@
 		<echo>Building Gitblit Express for RedHat OpenShift ${project.version}</echo>
 		
 		<local name="express.dir" />
-		<property name="express.dir" value="${project.build.dir}/express" />		
+		<property name="express.dir" value="${project.outputDirectory}/express" />		
 		<delete dir="${express.dir}" />
 		
 		<!-- Create the OpenShift filesystem -->
@@ -363,7 +349,7 @@
 
 		<!-- Gitblit classes -->
 		<jar destfile="${webinf}/lib/gitblit.jar">
-			<fileset dir="${project.compile.dir}">
+			<fileset dir="${project.compileOutputDirectory}">
 				<exclude name="WEB-INF/" />
 				<exclude name="com/gitblit/tests/" />
 				<exclude name="com/gitblit/build/**" />
@@ -375,13 +361,13 @@
 		</jar>
 
 		<!-- Build Express Zip file -->
-		<mx:zip basedir="${express.dir}" destfile="${project.target.dir}/${express.zipfile}">
+		<mx:zip basedir="${express.dir}" destfile="${project.targetDirectory}/${express.zipfile}">
 			<fileset dir="${basedir}">
 				<include name="LICENSE" />
 				<include name="NOTICE" />
 			</fileset>
 			<!-- README -->
-			<zipfileset fullpath="README.gitblit" file="${project.docs.dir}/openshift.mkd" />
+			<zipfileset fullpath="README.gitblit" file="${project.siteSourceDirectory}/openshift.mkd" />
 			<!-- resources -->
 			<zipfileset prefix="deployments/ROOT.war" dir="${project.resources.dir}">
 				<exclude name="thumbs.db" />
@@ -408,7 +394,7 @@
 		<!-- generate jar by traversing the class hierarchy of the specified
 			 classes, exclude any classes in classpath jars -->
 		<mx:genjar dependencies="" excludeClasspathJars="true"
-			destfile="${project.target.dir}/manager.jar">
+			destfile="${project.targetDirectory}/manager.jar">
 			<resource file="${project.src.dir}/com/gitblit/client/splash.png" />
 			<resource file="${project.resources.dir}/gitblt-favicon.png" />
 			<resource file="${project.resources.dir}/gitweb-favicon.png" />
@@ -447,12 +433,12 @@
 		</mx:genjar>
 
 		<!-- Build Manager Zip file -->
-		<mx:zip destfile="${project.target.dir}/${manager.zipfile}">
+		<mx:zip destfile="${project.targetDirectory}/${manager.zipfile}">
 			<fileset dir="${basedir}">
 				<include name="LICENSE" />
 				<include name="NOTICE" />
 			</fileset>
-			<fileset dir="${project.target.dir}">
+			<fileset dir="${project.targetDirectory}">
 				<include name="manager.jar" />
 			</fileset>
 			<!-- include "manager" tagged dependencies -->
@@ -460,7 +446,7 @@
 		</mx:zip>
 		
 		<!-- Cleanup -->
-		<delete file="${project.target.dir}/manager.jar" />
+		<delete file="${project.targetDirectory}/manager.jar" />
 	</target>
 	
 	
@@ -475,7 +461,7 @@
 		<!-- generate jar by traversing the class hierarchy of the specified
 			 classes, exclude any classes in "authority" classpath jars -->
 		<mx:genjar dependencies="authority" excludeClasspathJars="true" 
-			destfile="${project.target.dir}/authority.jar">
+			destfile="${project.targetDirectory}/authority.jar">
 			<resource file="${project.src.dir}/com/gitblit/client/splash.png" />
 			<resource file="${project.resources.dir}/gitblt-favicon.png" />
 			<resource file="${project.resources.dir}/user_16x16.png" />
@@ -510,12 +496,12 @@
 		</mx:genjar>
 
 		<!-- Build Authority Zip file -->
-		<mx:zip destfile="${project.target.dir}/${authority.zipfile}">
+		<mx:zip destfile="${project.targetDirectory}/${authority.zipfile}">
 			<fileset dir="${basedir}">
 				<include name="LICENSE" />
 				<include name="NOTICE" />
 			</fileset>
-			<fileset dir="${project.target.dir}">
+			<fileset dir="${project.targetDirectory}">
 				<include name="authority.jar" />
 			</fileset>
 			<zipfileset dir="${project.distrib.dir}/data" prefix="data">
@@ -532,7 +518,7 @@
 		</mx:zip>
 				
 		<!-- Cleanup -->
-		<delete file="${project.target.dir}/authority.jar" />
+		<delete file="${project.targetDirectory}/authority.jar" />
 	</target>
 					
 	<!-- 
@@ -544,12 +530,12 @@
 		<echo>Building Gitblit API Library ${project.version}</echo>
 	
 		<local name="javadoc.dir" />
-		<property name="javadoc.dir" value="${project.build.dir}/javadoc" />
+		<property name="javadoc.dir" value="${project.outputDirectory}/javadoc" />
 		<delete dir="${javadoc.dir}" />
 
 		<!-- Build API Library jar -->
 		<mx:genjar dependencies="" excludeClasspathJars="true"
-			destfile="${project.target.dir}/gbapi-${project.version}.jar">
+			destfile="${project.targetDirectory}/gbapi-${project.version}.jar">
 			<class name="com.gitblit.Keys" />
 			<class name="com.gitblit.client.GitblitClient" />
 			<class name="com.gitblit.models.FederationModel" />
@@ -558,7 +544,7 @@
 		</mx:genjar>
 		
 		<!-- Build API sources jar -->
-		<zip destfile="${project.target.dir}/gbapi-${project.version}-sources.jar">
+		<zip destfile="${project.targetDirectory}/gbapi-${project.version}-sources.jar">
 			<fileset dir="${project.src.dir}" defaultexcludes="yes">
 				<include name="com/gitblit/Constants.java"/>
 				<include name="com/gitblit/GitBlitException.java"/>
@@ -579,20 +565,20 @@
 		  		<include name="com/gitblit/models/**/*.java"/>
 		  		<include name="com/gitblit/utils/**/*.java"/>			  		
 			</fileset>
-			<redirector output="${project.build.dir}/javadoc.log" append="false" />
+			<redirector output="${project.outputDirectory}/javadoc.log" append="false" />
 		</mx:javadoc>
 		  			
-		<zip destfile="${project.target.dir}/gbapi-${project.version}-javadoc.jar">
+		<zip destfile="${project.targetDirectory}/gbapi-${project.version}-javadoc.jar">
 			<fileset dir="${javadoc.dir}" />
 		</zip>
 		
 		<!-- Build the API library zip file -->
-		<mx:zip destfile="${project.target.dir}/${gbapi.zipfile}">
+		<mx:zip destfile="${project.targetDirectory}/${gbapi.zipfile}">
 			<fileset dir="${basedir}">
 				<include name="LICENSE" />
 				<include name="NOTICE" />
 			</fileset>
-			<fileset dir="${project.target.dir}">
+			<fileset dir="${project.targetDirectory}">
 				<include name="gbapi-${project.version}.jar" />
 				<include name="gbapi-${project.version}-sources.jar" />
 				<include name="gbapi-${project.version}-javadoc.jar" />
@@ -603,7 +589,7 @@
 		
 		<!-- Cleanup -->
 		<delete>
-			<fileset dir="${project.target.dir}">
+			<fileset dir="${project.targetDirectory}">
 				<include name="javadoc/**" />
 				<include name="gbapi-${project.version}.jar" />
 				<include name="gbapi-${project.version}-sources.jar" />
@@ -623,11 +609,8 @@
 		<echo>Building Gitblit Website ${project.version}</echo>
 
 		<!-- Build Site -->
-		<delete dir="${project.site.dir}" />
-		
-		<mx:doc sourcefolder="${project.docs.dir}"
-			googleplusid="114464678392593421684" googleanalyticsid="UA-24377072-1" 
-			googlePlusOne="true" injectPrettify="true">
+		<mx:doc	googleplusid="114464678392593421684" googleanalyticsid="UA-24377072-1" 
+			googlePlusOne="true" injectPrettify="true" minify="true">
 			<structure>
 				<menu name="about">
 					<page name="overview" src="siteindex.mkd" out="index.html" />
@@ -664,19 +647,16 @@
 				<menu name="links">
 					<link name="Demo" src="https://demo-gitblit.rhcloud.com" />
 					<divider />
-					<link name="Github" src="http://github.com/gitblit" />
-					<link name="Issues" src="http://code.google.com/p/gitblit/issues/list" />
-					<link name="Discussion" src="http://groups.google.com/group/gitblit" />
-					<link name="Google+" src="https://plus.google.com/114464678392593421684" />
+					<link name="Github" src="${project.scmUrl}" />
+					<link name="Issues" src="${project.issuesUrl}" />
+					<link name="Discussion" src="${project.forumUrl}" />
+					<link name="Google+" src="${project.socialNetworkUrl}" />
 					<link name="Ohloh" src="http://www.ohloh.net/p/gitblit" />
 				</menu>
+				<divider />
 			</structure>
 			
 			<substitute token="%GCURL%" value="${gc.url}" />
-			<substitute token="%RELEASEVERSION%" value="${project.releaseVersion}" />
-			<substitute token="%RELEASEDATE%" value="${project.releaseDate}" />
-			<substitute token="%VERSION%" value="${project.version}" />
-			<substitute token="%BUILDDATE%" value="${project.buildDate}" />
 			
 			<properties token="%PROPERTIES%" file="${project.distrib.dir}/data/gitblit.properties" />
 			
@@ -702,7 +682,7 @@
 					<include name="federated_16x16.png" />
 					<include name="arrow_page.png" />
 				</fileset>
-				<fileset dir="${project.docs.dir}">
+				<fileset dir="${project.siteSourceDirectory}">
 					<include name="*.png" />
 					<include name="*.gif" />
 					<include name="*.js" />
@@ -711,22 +691,22 @@
 		</mx:doc>		
 
 		<!-- Copy Fancybox -->
-		<mkdir dir="${project.site.dir}/fancybox" />
-		<copy todir="${project.site.dir}/fancybox">
-			<fileset dir="${project.docs.dir}/fancybox">
+		<mkdir dir="${project.siteTargetDirectory}/fancybox" />
+		<copy todir="${project.siteTargetDirectory}/fancybox">
+			<fileset dir="${project.siteSourceDirectory}/fancybox">
 				<exclude name="thumbs.db" />
 			</fileset>
 		</copy>
 
 		<!-- Generate thumbnails of screenshots -->
 		<mx:thumbs input="png" output="png" maximumDimension="250" 
-			sourceFolder="${project.docs.dir}/screenshots"
-			destFolder="${project.site.dir}/thumbs" />
+			sourceFolder="${project.siteSourceDirectory}/screenshots"
+			destFolder="${project.siteTargetDirectory}/thumbs" />
 
 		<!-- Copy screenshots -->
-		<mkdir dir="${project.site.dir}/screenshots" />
-		<copy todir="${project.site.dir}/screenshots">
-			<fileset dir="${project.docs.dir}/screenshots">
+		<mkdir dir="${project.siteTargetDirectory}/screenshots" />
+		<copy todir="${project.siteTargetDirectory}/screenshots">
+			<fileset dir="${project.siteSourceDirectory}/screenshots">
 				<include name="*.png" />
 			</fileset>
 		</copy>
@@ -749,7 +729,7 @@
 	-->
 	<target name="updateGhPages" depends="buildSite">
 		<!-- Build gh-pages branch -->
-		<mx:ghpages repositoryfolder="${basedir}" sourceFolder="${project.site.dir}" obliterate="true" />
+		<mx:ghpages repositorydir="${basedir}" obliterate="true" />
 	</target>
 	
 
@@ -823,7 +803,7 @@
 			remotedir="${ftp.dir}"
 			passive="true"
 			verbose="yes">
-		<fileset dir="${project.site.dir}" />
+		<fileset dir="${project.siteTargetDirectory}" />
 		</ftp>
 	</target>
 
@@ -843,7 +823,7 @@
 	<macrodef name="generateDocs">
 		<attribute name="toFolder"/>
 		<sequential>
-			<mx:doc outputfolder="@{toFolder}" sourcefolder="${project.docs.dir}" injectPrettify="true" >
+			<mx:doc outputfolder="@{toFolder}" injectPrettify="true" minify="true">
 				<structure>
 					<menu name="about">
 						<page name="overview" src="siteindex.mkd" out="index.html" />
@@ -866,17 +846,13 @@
 					<menu name="links">
 						<link name="Demo" src="https://demo-gitblit.rhcloud.com" />
 						<divider />
-						<link name="Github" src="http://github.com/gitblit" />
-						<link name="Issues" src="http://code.google.com/p/gitblit/issues/list" />
-						<link name="Discussion" src="http://groups.google.com/group/gitblit" />
-						<link name="Google+" src="https://plus.google.com/114464678392593421684" />
+						<link name="Github" src="${project.scmUrl}" />
+						<link name="Issues" src="${project.issuesUrl}" />
+						<link name="Discussion" src="${project.forumUrl}" />
+						<link name="Google+" src="${project.socialNetworkUrl}" />
 						<link name="Ohloh" src="http://www.ohloh.net/p/gitblit" />
 					</menu>
 				</structure>
-				
-				<substitute token="%RELEASEVERSION%" value="${project.releaseVersion}" />
-				<substitute token="%RELEASEDATE%" value="${project.releaseDate}" />
-				<substitute token="%VERSION%" value="${project.version}" />
 				
 				<properties token="%PROPERTIES%" file="${project.distrib.dir}/data/gitblit.properties" />
 				
@@ -902,7 +878,7 @@
 						<include name="federated_16x16.png" />
 						<include name="arrow_page.png" />
 					</fileset>
-					<fileset dir="${project.docs.dir}">
+					<fileset dir="${project.siteSourceDirectory}">
 						<include name="*.png" />
 						<include name="*.gif" />
 					</fileset>
@@ -955,7 +931,7 @@
 				username="${googlecode.user}" 
 				password="${googlecode.password}" 
 				projectname="gitblit" 
-				filename="${project.target.dir}/@{sourceFile}" 
+				filename="${project.targetDirectory}/@{sourceFile}" 
 				targetfilename="@{targetFile}"
 				summary="@{description}"
 				labels="Featured, Type-Package, OpSys-All" />		
@@ -970,7 +946,7 @@
 	-->
 	<target name="installMaven" depends="compile" description="Install Gitblit JAR as Maven module">
 		<local name="project.jar" />
-		<property name="project.jar" value="${project.build.dir}/gitblit.jar" />
+		<property name="project.jar" value="${project.outputDirectory}/gitblit.jar" />
 		<mx:jar destfile="${project.jar}" includeresources="true" />
 
 		<exec executable="mvn">
@@ -992,7 +968,7 @@
     -->
 	<target name="uploadMaven" depends="compile" description="Upload Gitblit JAR to remote Maven repository">
 		<local name="project.jar" />
-		<property name="project.jar" value="${project.build.dir}/gitblit.jar" />
+		<property name="project.jar" value="${project.outputDirectory}/gitblit.jar" />
 		<mx:jar destfile="${project.jar}" includeresources="true" />
 
 		<exec executable="mvn">

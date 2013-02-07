@@ -1,14 +1,14 @@
-## Current Release (%RELEASEVERSION%)
+## Current Release (${project.releaseVersion})
 
 <div class="alert alert-info">
-<h4>Update Note %RELEASEVERSION%</h4>
+<h4>Update Note ${project.releaseVersion}</h4>
 Because there are now several types of files and folders that must be considered Gitblit data, the default location for data has changed.
 <p>You will need to move a few files around when upgrading.  Please see the Upgrading section of the <a href="setup.html">setup</a> page for details.</p>
 
 <b>Express Users</b> make sure to update your web.xml file with the ${baseFolder} values!
 </div>
 
-**downloads:** [GO Windows](%GCURL%gitblit-%RELEASEVERSION%.zip) | [GO Linux/OSX](%GCURL%gitblit-%RELEASEVERSION%.tar.gz) | [WAR](%GCURL%gitblit-%RELEASEVERSION%.war) | [Express](%GCURL%express-%RELEASEVERSION%.zip) | [fedclient](%GCURL%fedclient-%RELEASEVERSION%.zip) | [manager](%GCURL%manager-%RELEASEVERSION%.zip) | [api](%GCURL%gbapi-%RELEASEVERSION%.zip) &nbsp; *released %RELEASEDATE%*
+**downloads:** [GO Windows](%GCURL%gitblit-${project.releaseVersion}.zip) | [GO Linux/OSX](%GCURL%gitblit-${project.releaseVersion}.tar.gz) | [WAR](%GCURL%gitblit-${project.releaseVersion}.war) | [Express](%GCURL%express-${project.releaseVersion}.zip) | [Federatoin Client](%GCURL%fedclient-${project.releaseVersion}.zip) | [Gitblit Manager](%GCURL%manager-${project.releaseVersion}.zip) | [API Library](%GCURL%gbapi-${project.releaseVersion}.zip) &nbsp; *released ${project.releaseDate}*
 
 #### fixes
 
@@ -47,10 +47,10 @@ However, Express for OpenShift continues to be configured by `web.xml`.
 
 <div style="padding-top:20px;" />
 
-## Next Release (%VERSION%)
+## Next Release (${project.version})
 
 <div class="alert alert-info">
-<h4>Update Note %VERSION%</h4>
+<h4>Update Note ${project.version}</h4>
 These are the fixes, changes, and additions queued for the next release.
 </div>
 

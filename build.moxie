@@ -30,11 +30,16 @@ groupId: com.gitblit
 artifactId: gitblit
 version: 1.3.0-SNAPSHOT
 inceptionYear: 2011
-url: 'http://gitblit.com'
 
 # Current stable release
 releaseVersion: 1.2.1
 releaseDate: '2013-01-15'
+
+# Project urls
+url: 'http://gitblit.com'
+issuesUrl: 'http://code.google.com/p/gitblit/issues/list'
+socialNetworkUrl: 'https://plus.google.com/114464678392593421684'
+forumUrl: 'http://groups.google.com/group/gitblit'
 
 # Licenses section included for POM generation
 licenses:
@@ -65,16 +70,18 @@ scm: {
 # Mainclass is used for setting jar manifests and using the mx:run target
 mainclass: com.gitblit.GitBlitServer
 
-# Moxie supports multiple source folders and allows you to assign
-# a scope to each folder.
-sourceFolders:
+# Moxie supports multiple source directories and allows you to assign
+# a scope to each directory.
+sourceDirectories:
 - compile 'src'
 - compile 'resources'
 - test 'tests'
+# Moxie supports one site-scoped directory for mx:doc
+- site 'docs'
 
 # compile for Java 6 class format
 tasks: {
-	"mx:javac" : {
+	'mx:javac' : {
         source: 1.6
         target: 1.6
         compiler: javac1.6
@@ -89,11 +96,11 @@ tasks: {
 # Generate a distribution Maven POM (not suitable for building with Maven).
 apply: eclipse, intellij, pom
 
-# Copy all retrieved dependencies to the "ext" folder.
+# Copy all retrieved dependencies to the "ext" directory.
 # Generated IDE settings (.classpath, etc) will use the artifacts
-# from this project-relative folder. This allows the IDE settings
+# from this project-relative directory. This allows the IDE settings
 # to be version-controlled and shared.
-dependencyFolder: ext
+dependencyDirectory: ext
 
 # Register the Eclipse JGit Maven repository
 registeredRepositories:
