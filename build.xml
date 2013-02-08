@@ -10,7 +10,7 @@
 		<classpath location="${basedir}/tools/moxie.jar" />
 	</taskdef>
 	
-	<!-- Project folders -->
+	<!-- Project directories -->
 	<property name="project.src.dir" value="${basedir}/src" />	
 	<property name="project.resources.dir" value="${basedir}/resources" />	
 	<property name="project.distrib.dir" value="${basedir}/distrib" />
@@ -43,10 +43,10 @@
 	
 	<!--
 		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-		Cleanup all build artifacts and folders
+		Cleanup all build artifacts and directories
 		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-->
-	<target name="clean" depends="buildinfo" description="Cleanup all build artifacts and folders">
+	<target name="clean" depends="buildinfo" description="Cleanup all build artifacts and directories">
 		<!-- cleanup legacy build structure -->
 		<!-- this can be eliminated after 1.3.0 release -->
 		<delete>
@@ -64,7 +64,7 @@
 		<delete dir="${basedir}/temp" failonerror="false" />
 		<delete dir="${basedir}/war" failonerror="false" />
 		
-		<!-- Clean build and target folders -->
+		<!-- Clean build and target directories -->
 		<mx:clean />
 
 	</target>
@@ -77,19 +77,19 @@
 	-->
 	<target name="setup" depends="buildinfo" description="Setup up project">
 
-		<!-- copy distrib/data to project data folder -->
+		<!-- copy distrib/data to project data directory -->
 		<mkdir dir="${basedir}/data" />
 		<copy todir="${basedir}/data" overwrite="false">
 			<fileset dir="${project.distrib.dir}/data" />
 		</copy>
 		
-		<!-- copy gitblit.properties to the WEB-INF folder.
+		<!-- copy gitblit.properties to the WEB-INF directory.
 		     this file is only used for parsing setting descriptions. -->
 		<copy tofile="${project.src.dir}/WEB-INF/reference.properties" overwrite="true"
 			file="${project.distrib.dir}/data/gitblit.properties" />
 		
 		<!-- 
-			upgrade existing workspace to data folder
+			upgrade existing workspace to data directory
 			this code can be eliminated after 1.3.0 release
 		 -->
 		<move todir="${basedir}/data" overwrite="true" failonerror="false">
@@ -123,7 +123,7 @@
 		<!-- Generate the Keys class from the properties file -->
 		<mx:keys propertiesfile="${project.distrib.dir}/data/gitblit.properties"
 			 	outputclass="com.gitblit.Keys"
-			 	outputfolder="${project.src.dir}" />
+			 	todir="${project.src.dir}" />
 
 		<!-- Compile project incrementally -->
 		<mx:javac scope="compile" clean="false" />
@@ -186,7 +186,7 @@
 		<property name="go.dir" value="${project.outputDirectory}/go" />	
 		<delete dir="${go.dir}" />
 
-		<prepareDataFolder tofolder="${go.dir}/data" />
+		<prepareDataDirectory toDir="${go.dir}/data" />
 		
 		<!-- Build jar -->
 		<mx:jar destfile="${go.dir}/gitblit.jar" includeresources="true">
@@ -195,7 +195,7 @@
 		</mx:jar>
 
 		<!-- Generate the docs for the GO build -->
-		<generateDocs tofolder="${go.dir}/docs" />
+		<generateDocs toDir="${go.dir}/docs" />
 		
 		<!-- Create GO Windows Zip deployment -->
 		<mx:zip basedir="${go.dir}">
@@ -243,10 +243,10 @@
 		<property name="webinf" value="${war.dir}/WEB-INF" />
 
 		<!-- Generate the docs for the WAR build -->
-		<generateDocs tofolder="${webinf}/docs" />
+		<generateDocs toDir="${webinf}/docs" />
 
-		<!-- Prepare the data folder -->
-		<prepareDataFolder toFolder="${webinf}/data" />
+		<!-- Prepare the data directory -->
+		<prepareDataDirectory toDir="${webinf}/data" />
 
 		<!-- Build the WAR web.xml from the prototype web.xml -->
 		<mx:webxml sourcefile="${project.src.dir}/WEB-INF/web.xml" destfile="${webinf}/web.xml" />
@@ -258,7 +258,7 @@
 				<exclude name="thumbs.db" />
 				<exclude name="*.mkd" />
 			</fileset>
-			<!-- WEB-INF folder -->
+			<!-- WEB-INF directory -->
 			<zipfileset fullpath="WEB-INF/reference.properties" 
 				file="${project.distrib.dir}/data/gitblit.properties" />
 			<zipfileset prefix="WEB-INF" dir="${basedir}" >
@@ -338,8 +338,8 @@
 		<local name="webinf" />
 		<property name="webinf" value="${deployments.root}/WEB-INF" />
 
-		<!-- Prepare the data folder -->
-		<prepareDataFolder toFolder="${webinf}/data" />
+		<!-- Prepare the data directory -->
+		<prepareDataDirectory toDir="${webinf}/data" />
 					
 		<!-- Build the Express web.xml from the prototype web.xml and gitblit.properties -->
 		<!-- THIS FILE IS NOT OVERRIDDEN ONCE IT IS BUILT!!! -->
@@ -700,8 +700,8 @@
 
 		<!-- Generate thumbnails of screenshots -->
 		<mx:thumbs input="png" output="png" maximumDimension="250" 
-			sourceFolder="${project.siteSourceDirectory}/screenshots"
-			destFolder="${project.siteTargetDirectory}/thumbs" />
+			sourceDir="${project.siteSourceDirectory}/screenshots"
+			destDir="${project.siteTargetDirectory}/thumbs" />
 
 		<!-- Copy screenshots -->
 		<mkdir dir="${project.siteTargetDirectory}/screenshots" />
@@ -803,7 +803,7 @@
 			remotedir="${ftp.dir}"
 			passive="true"
 			verbose="yes">
-		<fileset dir="${project.siteTargetDirectory}" />
+			<fileset dir="${project.siteTargetDirectory}" />
 		</ftp>
 	</target>
 
@@ -821,9 +821,9 @@
 		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-->
 	<macrodef name="generateDocs">
-		<attribute name="toFolder"/>
+		<attribute name="toDir"/>
 		<sequential>
-			<mx:doc outputfolder="@{toFolder}" injectPrettify="true" minify="true">
+			<mx:doc toDir="@{toDir}" injectPrettify="true" minify="true">
 				<structure>
 					<menu name="about">
 						<page name="overview" src="siteindex.mkd" out="index.html" />
@@ -889,22 +889,22 @@
 	
 	<!--
 		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
-		Macro to create a pristine data folder for the target build
+		Macro to create a pristine data directory for the target build
 		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-->
-	<macrodef name="prepareDataFolder">
-		<attribute name="toFolder"/>
+	<macrodef name="prepareDataDirectory">
+		<attribute name="toDir"/>
 		<sequential>
-			<mkdir dir="@{toFolder}" />
-			<copy todir="@{toFolder}" overwrite="false">
+			<mkdir dir="@{toDir}" />
+			<copy todir="@{toDir}" overwrite="false">
 				<fileset dir="${project.distrib.dir}/data">
 					<include name="users.conf" />
 					<include name="projects.conf" />
 					<include name="gitblit.properties" />
 				</fileset>
 			</copy>
-			<mkdir dir="@{toFolder}/groovy" />
-			<copy todir="@{toFolder}/groovy">
+			<mkdir dir="@{toDir}/groovy" />
+			<copy todir="@{toDir}/groovy">
 				<fileset dir="${project.distrib.dir}/data/groovy">					
 					<include name="sendmail.groovy" />
 					<include name="sendmail-html.groovy" />

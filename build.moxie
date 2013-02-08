@@ -2,26 +2,8 @@
 # Gitblit project descriptor
 #
 
-# Proxies
-#
-# Moxie automatically uses all proxy definitions from your local Maven settings
-# (~/.m2/settings.xml) and also from your local Moxie settings
-# (~/.moxie/settings.moxie).
-#
-# Unlike Maven, which assumes you will proxy everything and requires
-# you to manually exclude hostnames (i.e. opt-out), Moxie allows you
-# to specify what repositories will be proxied by a proxy definition
-# (i.e. opt-in). If this is undesirable, Moxie also supports Maven-style
-# opt-out proxy definitions too. 
-#
-# If you want Moxie proxy settings, copy and edit the following example
-# opt-in proxy definition to a new text file: ~/.moxie/settings.moxie
-#
-# proxies:
-# - { id: yourProxy, active: true, protocol: http, host: yourproxy.com, port: 8081, repositories: "central, mavencentral, restlet, codehaus" }
-
-# Requires Moxie 0.5.0
-requires: 0.5.0
+# Specify minimum Moxie version required to build
+requires: 0.5.1-SNAPSHOT
 
 # Project Metadata
 name: Gitblit
